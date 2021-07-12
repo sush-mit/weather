@@ -1,0 +1,39 @@
+#!/home/sush/.local/share/virtualenvs/weather-GC63nuCz/bin/python3
+
+import sys
+import mechanize
+import json
+
+try:
+    city = sys.argv[1]
+except:
+    city = None
+try:
+    state = sys.argv[2]
+except:
+    state = None
+try:
+    country = sys.argv[3]
+except:
+    country = None
+
+if city == None and country == None and state == None:
+    sys.exit('Not enough arguments.')
+location = ''
+if city != None:
+    location += city
+    if state != None:
+        location += f',{state}'
+    if country != None:
+        location += f',{country}'
+
+api_key = 'a85e593a075e92f3b7285c21b42811ae'
+url = f'https://api.openweathermap.org/data/2.5/weather?q={location}&appid={api_key}'
+# req = mechanize.Request(url, None, {'user-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.124 Safari/537.36'})
+res = mechanize.urlopen(url)
+read = res.read()
+temp = json.loads(read)['main']['temp']
+humidity = json.loads(read)['main']['humidity']
+weather = json.loads(read)['weather'][0]['main']
+
+print(f'Temperature: {temp}K\nHumidity: {humidity}%\nWeather condition: {weather}')
