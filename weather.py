@@ -39,8 +39,8 @@ def get_weather(city, country, state):
 if __name__=='__main__':
     parser = argparse.ArgumentParser(description='Get weather of given location.')
     parser.add_argument('-ci', '--city', type=str, metavar='', help='Input name of city.')
-    parser.add_argument('-s', '--state', type=str, metavar='', help='Input name of state.')
-    parser.add_argument('-co', '--country', type=str, metavar='', help='Input name of country.')
+    parser.add_argument('-s', '--state', type=str, metavar='', help='Input code of state.')
+    parser.add_argument('-co', '--country', type=str, metavar='', help='Input code of country.')
     args = parser.parse_args()
     
     weather = get_weather(args.city, args.state, args.country)
