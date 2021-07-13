@@ -42,6 +42,6 @@ if __name__=='__main__':
     parser.add_argument('-s', '--state', type=str, metavar='', help='Input code of state.')
     parser.add_argument('-co', '--country', type=str, metavar='', help='Input code of country.')
     args = parser.parse_args()
-    
+
     weather = get_weather(args.city, args.state, args.country)
     print(f'Temperature: {weather[0]}C\nHumidity: {weather[1]}%\nWeather condition: {weather[2]}')
