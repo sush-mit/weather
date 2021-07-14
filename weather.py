@@ -42,7 +42,7 @@ class WeatherAPI:
         weather = js['current']['condition']['text']
 
         weather_data = WeatherData(temperature=temerature, humidity=humidity, weather=weather)
-        
+
         return weather_data
 
 class OpenWeather:
@@ -75,7 +75,7 @@ class OpenWeather:
         weather = js['weather'][0]['main']
 
         weather_data = WeatherData(temperature=temerature, humidity=humidity, weather=weather)
-        
+
         return weather_data
 
 class WeatherProviderFactory:
@@ -131,7 +131,7 @@ class Weather:
                 location += f',{state}'
             if country != None:
                 location += f',{country}'
-        
+
         weather_provider = WeatherProviderFactory().get(name)
         url = weather_provider.get_api_url(location=location, key=key)
         weather_data = weather_provider.fetch(url=url)
@@ -141,16 +141,16 @@ class Argparse:
     def __init__(self):
         self.config = Config()
         self.args_parse = argparse.ArgumentParser(description='Get weather of given location.')
-        self.args_parse.add_argument('--key', type=str, metavar='', help='Input api key.')
-        self.args_parse.add_argument('--city', type=str, metavar='', help='Input name of city.')
-        self.args_parse.add_argument('--state', type=str, metavar='', help='Input code of state.')
-        self.args_parse.add_argument('--country', type=str, metavar='', help='Input code of country.')
-        self.args_parse.add_argument('--interval', type=float, metavar='', help='Interval to check weather.')
-        self.args_parse.add_argument('--name', type=str, metavar='', help='Input name for provider.')
+        self.args_parse.add_argument('--key', type=str, metavar='', help='API Key.')
+        self.args_parse.add_argument('--city', type=str, metavar='', help='City.')
+        self.args_parse.add_argument('--state', type=str, metavar='', help='State.')
+        self.args_parse.add_argument('--country', type=str, metavar='', help='Country.')
+        self.args_parse.add_argument('--interval', type=float, metavar='', help='Interval to check weather (seconds).')
+        self.args_parse.add_argument('--name', type=str, metavar='', help='Provider name.')
         mutually_exclusive = self.args_parse.add_mutually_exclusive_group()
         mutually_exclusive.add_argument('--config', action='store_true', help='config api.')
         self.process()
-    
+
     def process(self):
         self.args = self.args_parse.parse_args()
         if self.args.config:
