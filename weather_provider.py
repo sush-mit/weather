@@ -1,26 +1,27 @@
-from abc import ABC, abstractmethod
-from typing import DefaultDict
+import sys
+
 import requests
-from dataclasses import dataclass, field
+from urllib3 import exceptions
 
+class WeatherProvider:
+    def __init__(self):
+        self.api_key = None
+        self.city = None
+        self.country = None
+        self.state = None
 
-@dataclass(init=False)
-class WeatherProvider(ABC):
-    api_key: str
-    city: str
-    country: str = field(default = None)
-    state: str = field(default = None)
-
-
-    @abstractmethod
     def get_api_url(self):
         pass
 
     def fetch(self):
-        response = requests.get(self.get_api_url())
+        try:
+            response = requests.get(self.get_api_url())
+            if response.status_code == 404:
+                sys.exit(print(f'no city called "{self.city}" found.'))
+        except exceptions.NewConnectionError:
+            sys.exit(print(f'Device is not connected to the internet. Please check connection and try again.'))
         return self.process(response.content)
 
-    @abstractmethod
     def process( self, response ):
         pass
 
