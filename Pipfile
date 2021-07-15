@@ -4,11 +4,9 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-requests = "*"
-mechanize = "*"
-pipreqs = "*"
+mechanize = "==0.4.5"
 
 [dev-packages]
 
 [requires]
-python_version = "3.8"
+python_version = "3.9"
