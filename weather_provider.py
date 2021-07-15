@@ -5,6 +5,8 @@ from urllib3 import exceptions
 
 class WeatherProvider:
     def __init__(self):
+        self.api_key = None
+        self.city = None
         self.country = None
         self.state = None
 
