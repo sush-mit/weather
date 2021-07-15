@@ -18,7 +18,7 @@ class WeatherProvider:
             response = requests.get(self.get_api_url())
             if response.status_code == 404:
                 sys.exit(print(f'no city called "{self.city}" found.'))
-        except exceptions.NewConnectionError:
+        except requests.exceptions.ConnectionError as e:
             sys.exit(print(f'Device is not connected to the internet. Please check connection and try again.'))
         return self.process(response.content)
 
