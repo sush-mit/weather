@@ -7,7 +7,7 @@ from arg_parse import ArgParse
 from weather_factory import WeatherProviderFactory
 
 class Weather:
-    def get_weather(self, api_key, city, unit, name, country = None, state = None):
+    def get_weather(self, api_key, city, unit, name="openweather", country = None, state = None):
         weather_provider = WeatherProviderFactory().get(name)
         weather_provider.api_key = api_key
         weather_provider.city = city
