@@ -19,19 +19,17 @@ class OpenWeather(WeatherProvider):
     def process(self, response):
         response = json.loads(response)
 
-        temerature = int(response['main']['temp'])
-        temerature -= 272.15
-
-        if isinstance(temerature, float):
-            temerature = f'{temerature:.2f}'
-
+        temperature = int(response['main']['temp'])
+        if self.unit == 'C':
+            temperature -= 272.15
+        if isinstance(temperature, float):
+            temperature = f'{temperature:.2f}'
         humidity = response['main']['humidity']
-
         if isinstance(humidity, float):
             humidity = f'{humidity:.2f}'
 
         weather = response['weather'][0]['main']
 
-        data = WeatherData(temperature=temerature, humidity=humidity, weather=weather)
+        data = WeatherData(temperature=temperature, humidity=humidity, weather=weather)
 
         return data

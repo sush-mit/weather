@@ -5,8 +5,6 @@ from urllib3 import exceptions
 
 class WeatherProvider:
     def __init__(self):
-        self.api_key = None
-        self.city = None
         self.country = None
         self.state = None
 
@@ -22,6 +20,6 @@ class WeatherProvider:
             sys.exit(print(f'Device is not connected to the internet. Please check connection and try again.'))
         return self.process(response.content)
 
-    def process( self, response ):
+    def process(self, response):
         pass
 
