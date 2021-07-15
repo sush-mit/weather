@@ -10,7 +10,7 @@ class ArgParse:
         self.args_parse.add_argument('--city', type=str, metavar='', help='City.')
         self.args_parse.add_argument('--state', type=str, metavar='', help='State.')
         self.args_parse.add_argument('--country', type=str, metavar='', help='Country.')
-        self.args_parse.add_argument('--unit', type=str, metavar='', help='Units to print temperature in.')
+        self.args_parse.add_argument('--unit', type=str, metavar='', help='Units to print temperature in ("K" or "C").')
         self.args_parse.add_argument('--interval', type=float, metavar='', help='Interval to check weather (seconds).')
         self.args_parse.add_argument('--name', type=str, metavar='', help='Provider name.')
         mutually_exclusive = self.args_parse.add_mutually_exclusive_group()
