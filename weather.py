@@ -15,7 +15,6 @@ class Weather:
         weather_provider.state = state
 
         weather_data = weather_provider.fetch()
-
         return weather_data
 
 if __name__=='__main__':
