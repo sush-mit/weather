@@ -10,7 +10,7 @@ class ArgParse:
         self.args_parse.add_argument('--city', type=str, metavar='', help='City.')
         self.args_parse.add_argument('--state', type=str, metavar='', help='State.')
         self.args_parse.add_argument('--country', type=str, metavar='', help='Country.')
-        self.args_parse.add_argument('--unit', type=str, metavar='', help='Units to print temperature in.')
+        self.args_parse.add_argument('--unit', type=str, metavar='', help='Units to print temperature in ("K" or "C").')
         self.args_parse.add_argument('--interval', type=float, metavar='', help='Interval to check weather (seconds).')
         self.args_parse.add_argument('--name', type=str, metavar='', help='Provider name.')
         mutually_exclusive = self.args_parse.add_mutually_exclusive_group()
@@ -39,3 +39,9 @@ class ArgParse:
             name = self.args.name
             config_parser = self.config.get_config(name)
             self.key = config_parser.get('key')
+
+        if self.args.unit not in ['C', 'K']:
+            print('Wrong arguement for --unit, continuing with default "C".')
+            self.args.unit = 'C'
+        if not self.args.unit:
+            self.args.unit = 'C'
