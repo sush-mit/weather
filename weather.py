@@ -24,7 +24,6 @@ if __name__=='__main__':
     w = Weather()
 
     weather = w.get_weather(city=ap.args.city, state=ap.args.state, country=ap.args.country, api_key=ap.key, name=ap.args.name, unit=ap.args.unit)
-<<<<<<< HEAD
 
     if ap.args.unit.upper() == 'F':
         weather.to_farenheit()
@@ -33,11 +32,9 @@ if __name__=='__main__':
 
     while True:
         print(f'\nTemperature: {weather.temperature}{ap.args.unit.upper()}\nHumidity: {weather.humidity}%\nWeather condition: {weather.weather}')
-=======
 
     while True:
         print(f'Temperature: {weather.temperature}{ap.args.unit.upper()}\nHumidity: {weather.humidity}%\nWeather condition: {weather.weather}')
->>>>>>> Added feature to choose between C and K along with some minor changes.
         if not ap.args.interval:
             sys.exit()
         time.sleep(ap.args.interval)
