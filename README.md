@@ -14,7 +14,7 @@ $ python3 weather.py --name=<provider-name> --city=<city>
 ```
 $ python3 weather.py --config --name=openweather --key=fwefa3r3a23aw
 Settings saved to config.ini.
-$ python3 weather.py --name openweather --city Miami
+$ python3 weather.py --city Miami
 Temperature: 30.85C
 Humidity: 78%
 Weather condition: Clouds
