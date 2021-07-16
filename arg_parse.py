@@ -36,12 +36,15 @@ class ArgParse:
         else:
             if self.args.city == None and self.args.country == None and self.args.state == None:
                 sys.exit('Not enough arguments.')
-            name = self.args.name
-            config_parser = self.config.get_config(name)
+            if self.args.name == None:
+                print('--name not specified, continuing with default: openweather')
+                self.args.name = 'openweather'
+            config_parser = self.config.get_config(self.args.name)
             self.key = config_parser.get('key')
 
-        if self.args.unit not in ['C', 'K']:
-            print('Wrong arguement for --unit, continuing with default "C".')
-            self.args.unit = 'C'
         if not self.args.unit:
+            self.args.unit = 'C'
+            print('--unit not specified, continuing with default: C')
+        if self.args.unit not in ['C', 'K']:
+            print('Wrong arguement for --unit, continuing with default: C.')
             self.args.unit = 'C'
