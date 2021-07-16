@@ -42,17 +42,9 @@ class ArgParse:
             config_parser = self.config.get_config(self.args.name)
             self.key = config_parser.get('key')
 
-<<<<<<< HEAD
-        if self.args.unit not in ['C', 'K']:
-            print('Wrong arguement for --unit, continuing with default "C".')
-            self.args.unit = 'C'
-        if not self.args.unit:
-            self.args.unit = 'C'
-=======
         if not self.args.unit:
             self.args.unit = 'C'
             print('--unit not specified, continuing with default: C')
         if self.args.unit not in ['C', 'K']:
             print('Wrong arguement for --unit, continuing with default: C.')
             self.args.unit = 'C'
->>>>>>> 65082ff49427bb5257cc7c842aace3af1391d7a0
