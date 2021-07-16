@@ -7,7 +7,7 @@ from arg_parse import ArgParse
 from weather_factory import WeatherProviderFactory
 
 class Weather:
-    def get_weather(self, api_key, city, unit, name="openweather", country = None, state = None):
+    def get_weather(self, api_key, city, unit, name, country = None, state = None):
         weather_provider = WeatherProviderFactory().get(name)
         weather_provider.api_key = api_key
         weather_provider.city = city
@@ -26,11 +26,7 @@ if __name__=='__main__':
     weather = w.get_weather(city=ap.args.city, state=ap.args.state, country=ap.args.country, api_key=ap.key, name=ap.args.name, unit=ap.args.unit)
 
     while True:
-<<<<<<< HEAD
-        print(f'Temperature: {weather.temperature}{ap.args.unit.upper()}\nHumidity: {weather.humidity}%\nWeather condition: {weather.weather}')
-=======
         print(f'\nTemperature: {weather.temperature}{ap.args.unit.upper()}\nHumidity: {weather.humidity}%\nWeather condition: {weather.weather}')
->>>>>>> 65082ff49427bb5257cc7c842aace3af1391d7a0
         if not ap.args.interval:
             sys.exit()
         time.sleep(ap.args.interval)
