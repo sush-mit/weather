@@ -20,13 +20,8 @@ class WeatherAPI(WeatherProvider):
     def process(self, js):
         js = json.loads(js)
         temperature = int(js['current']['temp_c'])
-        if self.unit == 'K':
-            temperature += 272.15
-        if isinstance(temperature, float):
-            temperature = f'{temperature:.2f}'
+        temperature += 272.15 # Converting celsius to kelvin
         humidity = js['current']['humidity']
-        if isinstance(humidity, float):
-            humidity = f'{humidity:.2f}'
         if isinstance(humidity, float):
             humidity = f'{humidity:.2f}'
         weather = js['current']['condition']['text']

@@ -10,7 +10,7 @@ class ArgParse:
         self.args_parse.add_argument('--city', type=str, metavar='', help='City.')
         self.args_parse.add_argument('--state', type=str, metavar='', help='State.')
         self.args_parse.add_argument('--country', type=str, metavar='', help='Country.')
-        self.args_parse.add_argument('--unit', type=str, metavar='', help='Units to print temperature in ("K" or "C").')
+        self.args_parse.add_argument('--unit', type=str, metavar='', help='Units to print temperature in (K/F/C).', default='K')
         self.args_parse.add_argument('--interval', type=float, metavar='', help='Interval to check weather (seconds).')
         self.args_parse.add_argument('--name', type=str, metavar='', help='Provider name.')
         mutually_exclusive = self.args_parse.add_mutually_exclusive_group()
@@ -36,23 +36,14 @@ class ArgParse:
         else:
             if self.args.city == None and self.args.country == None and self.args.state == None:
                 sys.exit('Not enough arguments.')
+            if self.args.name not in Config.API_NAMES:
+                sys.exit(f'Invalid provider name: {self.args.name}')
             if self.args.name == None:
                 print('--name not specified, continuing with default: openweather')
                 self.args.name = 'openweather'
             config_parser = self.config.get_config(self.args.name)
             self.key = config_parser.get('key')
 
-<<<<<<< HEAD
-        if self.args.unit not in ['C', 'K']:
-            print('Wrong arguement for --unit, continuing with default "C".')
-            self.args.unit = 'C'
-        if not self.args.unit:
-            self.args.unit = 'C'
-=======
-        if not self.args.unit:
-            self.args.unit = 'C'
-            print('--unit not specified, continuing with default: C')
-        if self.args.unit not in ['C', 'K']:
-            print('Wrong arguement for --unit, continuing with default: C.')
-            self.args.unit = 'C'
->>>>>>> 65082ff49427bb5257cc7c842aace3af1391d7a0
+        if self.args.unit not in ['K', 'F', 'C']:
+            print('Wrong arguement for --unit, continuing with default: K')
+            self.args.unit = 'K'
