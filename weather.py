@@ -25,6 +25,11 @@ if __name__=='__main__':
 
     weather = w.get_weather(city=ap.args.city, state=ap.args.state, country=ap.args.country, api_key=ap.key, name=ap.args.name, unit=ap.args.unit)
 
+    if ap.args.unit.upper() == 'F':
+        weather.to_farenheit()
+    if ap.args.unit.upper() == 'C':
+        weather.to_celsius()
+
     while True:
         print(f'\nTemperature: {weather.temperature}{ap.args.unit.upper()}\nHumidity: {weather.humidity}%\nWeather condition: {weather.weather}')
         if not ap.args.interval:

@@ -20,10 +20,7 @@ class WeatherBit(WeatherProvider):
     def process(self, response):
         js = json.loads(response)
         temperature = js['data'][0]['temp']
-        if self.unit == 'K':
-            temperature += 272.15
-        if isinstance(temperature, float):
-            temperature = f'{temperature:.2f}'
+        temperature += 272.15 # Converting celsius to kelvin
         humidity = None
         weather = js['data'][0]['weather']['description']
 
