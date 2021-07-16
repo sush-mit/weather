@@ -4,10 +4,6 @@ import requests
 from urllib3 import exceptions
 
 class WeatherProvider:
-    def __init__(self):
-        self.country = None
-        self.state = None
-
     def get_api_url(self):
         pass
 
