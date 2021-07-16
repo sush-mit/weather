@@ -6,13 +6,13 @@ class ArgParse:
     def __init__(self):
         self.config = Config()
         self.args_parse = argparse.ArgumentParser(description='Get weather of given location.')
-        self.args_parse.add_argument('--key', type=str, metavar='', help='API Key.')
+        self.args_parse.add_argument('--key', type=str, metavar='', help='API Key.', default='a85e593a075e92f3b7285c21b42811ae')
         self.args_parse.add_argument('--city', type=str, metavar='', help='City.')
         self.args_parse.add_argument('--state', type=str, metavar='', help='State.')
         self.args_parse.add_argument('--country', type=str, metavar='', help='Country.')
         self.args_parse.add_argument('--unit', type=str, metavar='', help='Units to print temperature in ("K" or "C").')
         self.args_parse.add_argument('--interval', type=float, metavar='', help='Interval to check weather (seconds).')
-        self.args_parse.add_argument('--name', type=str, metavar='', help='Provider name.')
+        self.args_parse.add_argument('--name', type=str, metavar='', help='Provider name.', default='openweather')
         mutually_exclusive = self.args_parse.add_mutually_exclusive_group()
         mutually_exclusive.add_argument('--config', action='store_true', help='config api.')
         self.process()
@@ -36,11 +36,12 @@ class ArgParse:
         else:
             if self.args.city == None and self.args.country == None and self.args.state == None:
                 sys.exit('Not enough arguments.')
-            if self.args.name == None:
-                print('--name not specified, continuing with default: openweather')
-                self.args.name = 'openweather'
+            # if self.args.name == None:
+            #     print('--name not specified, continuing with default: openweather')
+            #     self.args.name = 'openweather'
             config_parser = self.config.get_config(self.args.name)
             self.key = config_parser.get('key')
+            if not self.key: self.key = self.args.key
 
         if not self.args.unit:
             self.args.unit = 'C'
