@@ -8,7 +8,7 @@ $ python3 weather.py --config --name=<provider-name> --key=<api-key>
 ```
 #### Getting weather information:
 ```
-$ python3 weather.py --name=<provider-name> --city=<city>
+$ python3 weather.py --city=<city>
 ```
 ### Example:
 ```
