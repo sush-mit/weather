@@ -3,35 +3,24 @@ import sys
 import datetime
 
 from weather_database import DatabaseWriter, DatabaseReader
+import printer
 
 class WeatherDatabaseManager:
-    def update_database(weather_obj, city):
-        temperature: float
-        humidity: float
-        weather: str
-        date: datetime.date
-        time: str
 
-        def parse():
+    def update_database(weather_obj, city):
             temperature = weather_obj.temperature
             humidity = weather_obj.humidity
             weather = weather_obj.weather
             date = weather_obj.date
-            time = weather_obj.time
+            time = f'{weather_obj.time.hour}:{weather_obj.time.minute}:{weather_obj.time.second}'
 
-        database_writer = DatabaseWriter()
-        database_writer.set_database()
-        database_writer.create_database()
-        try:
-            database_writer.c.execute(f"""INSERT INTO {DatabaseReader.table_name} (id, city, temperature, humidity, weather, date, time)
-                    VALUES (?, ?, ?, ?, ?, ?, ?)""",
-                    (city, temperature, humidity, weather, date, time))
-        except BaseException as e:
-            if 'UNIQUE constraint failed' in ' '.join(e.args):
-                pass
-        database_writer.conn.commit()
+            database_writer = DatabaseWriter()
+            database_writer.set_database()
+            database_writer.create_database()
+            database_writer.update_database(city, temperature, humidity, weather, date, time)
 
     def get_database(order_by=None, order_in='ASC', filter_option=None, search_terms=None):
         database_reader = DatabaseReader()
-        database_data = database_reader.sqlite_select(order_by=None, order_in='ASC', filter_option=filter_option, search_terms=search_terms)
-        return database_data
+        database_reader.set_database()
+        database_data = database_reader.sqlite_select(order_by=order_by, order_in='ASC', filter_option=filter_option, search_terms=search_terms)
+        printer.database_weather_data(database_data)

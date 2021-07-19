@@ -1,22 +1,20 @@
 import sqlite3
 import sys
+import datetime
 
 from database_weather_data import DatabaseWeatherData
 
 class WeatherDatabase:
     database_file = '.\\weather.db'
     table_name = 'weatherDatabase'
-    getable_column_names = ['temperature', 'humidity', 'weather']
 
     def set_database(self):
-        print('setting')
         self.conn = sqlite3.connect(WeatherDatabase.database_file)
         self.c = self.conn.cursor()
-        print('set')
 
 class DatabaseWriter(WeatherDatabase):
     def create_database(self):
-        self.c.execute(""" CREATE TABLE IF NOT EXISTS weatherDatabase (
+        self.c.execute(f""" CREATE TABLE IF NOT EXISTS {WeatherDatabase.table_name} (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             city TEXT,
             "temperature (K)" REAL,
@@ -27,6 +25,20 @@ class DatabaseWriter(WeatherDatabase):
         )""")
         self.conn.commit()
 
+    def update_database(self, city, temperature, humidity, weather, date, time):
+        try:
+            self.c.execute(f"""INSERT INTO {DatabaseReader.table_name} (city, "temperature (K)", "humidity (%)", weather, date, time)
+                    VALUES (?, ?, ?, ?, ?, ?)""",
+                    (city, temperature, humidity, weather, date, time))
+            print('done')
+        except BaseException as e:
+            if 'UNIQUE constraint failed' in ' '.join(e.args):
+                pass
+            else:
+                print(e)
+        self.conn.commit()
+
+        
 class DatabaseReader(WeatherDatabase):
     def sqlite_select(self, order_by=None, order_in='ASC', filter_option=None, search_terms=None):
         command = self.get_command(order_by=order_by, order_in=order_in, filter_option=filter_option, search_terms=search_terms)
@@ -46,18 +58,28 @@ class DatabaseReader(WeatherDatabase):
 
     def execute(self, command):
         try:
-            self.cur.execute(command)
+            self.c.execute(command)
         except sqlite3.OperationalError as e:
             if 'no such table' in e.args[0]:
                 pass
             else:
                 error_msg = f"Error reading FROM {WeatherDatabase.table_name}:\n{' '.join(e.args)}"
                 sys.exit(error_msg)
-        results = [result for result in self.cur.fetchall()]
+        results = [result for result in self.c.fetchall()]
         return self.parse(results)
 
     def parse(self, results):
-        pass
+        for result in results:
+        #     id_ = results[0][0]
+        #     city = results[0][1]
+        #     temperature = results[0][2]
+        #     humidity = results[0][3]
+        #     weather = results[0][4]
+        #     date = (datetime.datetime.strptime(results[0][5], '%Y-%m-%d')).date()
+        #     time = (datetime.datetime.strptime(results[0][6], '%H:%M:%S')).time()
+            result = [str(re) for re in result]
+            yield '   '.join(result)
+
 
 # if __name__ == '__main__':
 #     dbw = DatabaseWriter()

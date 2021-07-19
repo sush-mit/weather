@@ -4,6 +4,7 @@ from config import Config
 import datetime
 
 from weather_database_manager import DatabaseReader
+import lists
 
 class ArgParse:
     def __init__(self):
@@ -12,20 +13,21 @@ class ArgParse:
         self.args_parse.add_argument('--city', type=str, metavar='', help='City.')
         self.args_parse.add_argument('--state', type=str, metavar='', help='State.')
         self.args_parse.add_argument('--country', type=str, metavar='', help='Country.')
-        self.args_parse.add_argument('--unit', type=str, metavar='', help='Units to print temperature in ("K" or "C").')
+        self.args_parse.add_argument('--unit', type=str, metavar='', choices=lists.units, help='Units to print temperature in.', default='K')
         self.args_parse.add_argument('--interval', type=float, metavar='', help='Interval to check weather (seconds).')
-        self.args_parse.add_argument('--name', type=str, metavar='', help='Provider name.')
+        self.args_parse.add_argument('--name', type=str, metavar='', choices=lists.providers, help='Provider name.')
+        self.args_parse.add_argument('-p', '--print', action='store_true', help='Print weather data to console.')
 
         mutually_exclusive = self.args_parse.add_mutually_exclusive_group()
 
         mutually_exclusive.add_argument('--config', action='store_true', help='config api.')
         self.args_parse.add_argument('--key', type=str, metavar='', help='API Key.')
         mutually_exclusive.add_argument('--query', action='store_true', help='Get weather data from database.')
-        self.args_parse.add_argument('--date', type=lambda s: datetime.datetime.strptime(s, '%y-%m-%d'), metavar='', help='Date in YYYY-MM-DD.')
-        self.args_parse.add_argument('--get', type=str, metavar='', choices=DatabaseReader.getable_column_names, help='Data to get (can be comma separated values).')
+        self.args_parse.add_argument('--date', type=datetime.date.fromisoformat, metavar='', help='Date in YYYY-MM-DD.')
+        self.args_parse.add_argument('--get', type=str, metavar='', choices=lists.getable_column_names, help='Data to get (can be comma separated values).')
         self.args_parse.add_argument('--timeframe', type=str, metavar='', help='Time frame to get weather data from ("Ny"/"Nm"/"Nd").', default='1d')
-        self.args_parse.add_argument('--orderby', type=str, metavar='', choices=DatabaseReader.getable_column_names, help='Order data by.')
-        self.args_parse.add_argument('--orderin', type=str, metavar='', choices=['ASC', 'DSC'], help='Order data in.', default='ASC')
+        self.args_parse.add_argument('--orderby', type=str, metavar='', choices=lists.getable_column_names, help='Order data by.')
+        self.args_parse.add_argument('--orderin', type=str, metavar='', choices=lists.order_in, help='Order data in.', default='ASC')
         mutually_exclusive.add_argument('-s', '--store', action='store_true', help='Store weather data in database.')
         self.process()
 
@@ -51,8 +53,9 @@ class ArgParse:
                 sys.exit('Please set city name or date to get weather data from.')
             if not self.args.get:
                 sys.exit(f'Please set which weather data to get: {DatabaseReader.getable_column_names}')
-            self.filter_options = [filter_option for filter_option in [self.args.city, self.args.date] if filter_option]
-            self.search_terms = [search_term.strip() for search_term in self.args.get.split(',')]
+            self.filter_options = [filter_option for filter_option in ['city', 'date'] if self.args.__getattribute__(filter_option)]
+            gets = [get for get in self.args.get.split(',')]
+            self.search_terms = [search_term for search_term in [self.args.city, self.args.date] if search_term]
 
         else:
             if self.args.city == None and self.args.country == None and self.args.state == None:
@@ -62,6 +65,8 @@ class ArgParse:
                 self.args.name = 'openweather'
             config_parser = self.config.get_config(self.args.name)
             self.key = config_parser.get('key')
+            if self.key == None:
+                sys.exit(f'Key is not set for {self.args.name}')
 
         if not self.args.unit:
             self.args.unit = 'C'
