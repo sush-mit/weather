@@ -1,8 +1,11 @@
+import datetime
+
 class WeatherData:
     def __init__(self, temperature, humidity, weather):
         self.temperature = temperature
         self.humidity = humidity
         self.weather = weather
+<<<<<<< HEAD
         if isinstance(self.temperature, float):
             self.temperature = self.fix_float(self.temperature)
         if isinstance(self.humidity, float):
@@ -20,3 +23,7 @@ class WeatherData:
     
     def fix_float(self, val):
         return float(f'{val:.2f}')
+=======
+        self.date=datetime.date.today()
+        self.time=datetime.datetime.now().time()
+>>>>>>> implemented database read
