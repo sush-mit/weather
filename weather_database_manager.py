@@ -3,7 +3,7 @@ import sys
 import datetime
 
 from weather_database import DatabaseWriter, DatabaseReader
-import printer
+import filter_get
 
 class WeatherDatabaseManager:
 
@@ -23,4 +23,16 @@ class WeatherDatabaseManager:
         database_reader = DatabaseReader()
         database_reader.set_database()
         database_data = database_reader.sqlite_select(order_by=order_by, order_in='ASC', filter_option=filter_option, search_terms=search_terms, timeframe=timeframe)
-        printer.database_weather_data(database_data)
+        return database_data
+
+    def get_max(timeframe, filter_option=None, city=None):
+        database_reader = DatabaseReader()
+        database_reader.set_database()
+        database_data = database_reader.sqlite_select_max(filter_option=filter_option, timeframe=timeframe, city=city)
+        return database_data
+
+    def get_min(timeframe, filter_option=None, city=None):
+        database_reader = DatabaseReader()
+        database_reader.set_database()
+        database_data = database_reader.sqlite_select_min(filter_option=filter_option, timeframe=timeframe, city=city)
+        return database_data

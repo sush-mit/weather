@@ -12,24 +12,31 @@ class ArgParse:
     def __init__(self):
         self.config = Config()
         self.args_parse = argparse.ArgumentParser(description='Get weather of given location.')
+        # General arguments
         self.args_parse.add_argument('--city', type=str, metavar='', help='City.')
         self.args_parse.add_argument('--state', type=str, metavar='', help='State.')
         self.args_parse.add_argument('--country', type=str, metavar='', help='Country.')
+        self.args_parse.add_argument('--name', type=str, metavar='', choices=lists.providers, help='Provider name.')
+        # Print arguements
+        self.args_parse.add_argument('-p', '--print', action='store_true', help='Print weather data to console.')
         self.args_parse.add_argument('--unit', type=str, metavar='', choices=lists.units, help='Units to print temperature in.', default='K')
         self.args_parse.add_argument('--interval', type=float, metavar='', help='Interval to check weather (seconds).')
-        self.args_parse.add_argument('--name', type=str, metavar='', choices=lists.providers, help='Provider name.')
-        self.args_parse.add_argument('-p', '--print', action='store_true', help='Print weather data to console.')
+        # Query arguments
+        self.args_parse.add_argument('--date', type=datetime.date.fromisoformat, metavar='', help='Date in YYYY-MM-DD.')
+        self.args_parse.add_argument('--get', type=str, metavar='', choices=lists.getable_column_names, help='Data to get (can be comma separated values).')
+        self.args_parse.add_argument('--timeframe',type=self.timeframe, metavar='', help='Time frame to get weather data from ("Ny"/"Nm"/"Nd").', default='1d')
+        self.args_parse.add_argument('--orderby', type=str, metavar='', choices=lists.getable_column_names, help='Order data by.')
+        self.args_parse.add_argument('--orderin', type=str, metavar='', choices=lists.order_in, help='Order data in.', default='ASC')
+        self.args_parse.add_argument('--max', action='store_true', help='Get maximum value of following argument.')
+        self.args_parse.add_argument('--min', action='store_true', help='Get minimum value of following argument.')
+        self.args_parse.add_argument('--temperature', type=self.timeframe, metavar='', help='Get minimum value of following argument.')
+        self.args_parse.add_argument('--humidity', type=self.timeframe, metavar='', help='Get minimum value of following argument.')
 
         mutually_exclusive = self.args_parse.add_mutually_exclusive_group()
 
         mutually_exclusive.add_argument('--config', action='store_true', help='config api.')
         self.args_parse.add_argument('--key', type=str, metavar='', help='API Key.')
         mutually_exclusive.add_argument('--query', action='store_true', help='Get weather data from database.')
-        self.args_parse.add_argument('--date', type=datetime.date.fromisoformat, metavar='', help='Date in YYYY-MM-DD.')
-        self.args_parse.add_argument('--get', type=str, metavar='', choices=lists.getable_column_names, help='Data to get (can be comma separated values).')
-        self.args_parse.add_argument('--timeframe',type=self.timeframe, metavar='', help='Time frame to get weather data from ("Ny"/"Nm"/"Nd").', default='1d')
-        self.args_parse.add_argument('--orderby', type=str, metavar='', choices=lists.getable_column_names, help='Order data by.')
-        self.args_parse.add_argument('--orderin', type=str, metavar='', choices=lists.order_in, help='Order data in.', default='ASC')
         mutually_exclusive.add_argument('-s', '--store', action='store_true', help='Store weather data in database.')
         args_proc = ArgsProc(self)
         self.args = self.args_parse.parse_args()
@@ -83,19 +90,29 @@ class ArgsProc:
         sys.exit(f'Settings saved to {Config.config_filename}.')
 
     def process_query(self):
-        if not self.ap.args.city and not self.ap.args.date:
-            sys.exit('Please set city name or date to get weather data from.')
+        if not self.ap.args.city and not self.ap.args.date and not self.ap.args.max and not self.ap.args.min:
+            sys.exit('Please set how to filter data.')
         if not self.ap.args.get:
-            sys.exit(f'Please set which weather data to get: {DatabaseReader.getable_column_names}')
-        self.ap.filter_options = [filter_option for filter_option in ['city', 'date'] if self.ap.args.__getattribute__(filter_option)]
-        gets = [get for get in self.ap.args.get.split(',')]
-        if self.ap.args.timeframe:
-            if re.match('[0-9]+d', self.ap.args.timeframe):
-                self.ap.args.timeframe = f'-{self.ap.args.timeframe[:-1]} day'
-            elif re.match('[0-9]+w', self.ap.args.timeframe):
-                self.ap.args.timeframe = f'-{self.ap.args.timeframe[:-1]} week'
-            elif re.match('[0-9]+m', self.ap.args.timeframe):
-                self.ap.args.timeframe = f'-{self.ap.args.timeframe[:-1]} month'
-            elif re.match('[0-9]+y', self.ap.args.timeframe):
-                self.ap.args.timeframe = f'-{self.ap.args.timeframe[:-1]} year'
+            sys.exit(f'Please set which weather data to get: {lists.getable_column_names}')
+        if self.ap.args.max or self.ap.args.min:
+            if self.ap.args.temperature:
+                self.ap.args.temperature = self.process_timeframe(self.ap.args.temperature)
+                self.ap.filter_options = '"temperature (K)"'
+            elif self.ap.args.humidity:
+                self.ap.args.humidity = self.process_timeframe(self.ap.args.humidity)
+                self.ap.filter_options = '"humidity (%)"'
+        elif self.ap.args.timeframe:
+            self.ap.args.timeframe = self.process_timeframe(self.ap.args.timeframe)
+            self.ap.filter_options = [filter_option for filter_option in ['city', 'date'] if self.ap.args.__getattribute__(filter_option)]
         self.ap.search_terms = [search_term for search_term in [self.ap.args.city, self.ap.args.date] if search_term]
+
+    def process_timeframe(self, timeframe):
+            if re.match('[0-9]+d', timeframe):
+                timeframe = f'-{timeframe[:-1]} day'
+            elif re.match('[0-9]+w', timeframe):
+               timeframe = f'-{timeframe[:-1]} week'
+            elif re.match('[0-9]+m', timeframe):
+                timeframe = f'-{timeframe[:-1]} month'
+            elif re.match('[0-9]+y', timeframe):
+                timeframe = f'-{timeframe[:-1]} year'
+            return timeframe
