@@ -56,6 +56,28 @@ class DatabaseReader(WeatherDatabase):
             command +=  f' ORDER BY {order_by} {order_in}'
         return command
 
+    def sqlite_select_max(self, timeframe, filter_option=None, city=None):
+        command = self.get_command_max(timeframe, filter_option, city)
+        return self.execute(command=command)
+
+    def get_command_max(self, timeframe, filter_option=None, city=None):
+        command = f"""SELECT * FROM {self.table_name} WHERE {filter_option} = (SELECT MIN({filter_option}) FROM {self.table_name} WHERE date > date(date, "{timeframe}")"""
+        if city != None:
+            command += f' AND city = "{city}"'
+        command += f""")"""
+        return command
+
+    def sqlite_select_min(self, timeframe, filter_option=None, search_terms=None, city=None):
+        command = self.get_command_min(timeframe, filter_option, city)
+        return self.execute(command=command)
+    
+    def get_command_min(self, timeframe, filter_option=None, city=None):
+        command = f"""SELECT * FROM {self.table_name} WHERE {filter_option} = (SELECT MIN({filter_option}) FROM {self.table_name} WHERE date > date(date, "{timeframe}")"""
+        if city != None:
+            command += f' AND city = "{city}"'
+        command += f""")"""
+        return command
+
     def execute(self, command):
         try:
             self.c.execute(command)
@@ -70,11 +92,11 @@ class DatabaseReader(WeatherDatabase):
 
     def parse(self, results):
         for result in results:
-            result = [str(re) for re in result]
-            yield '   '.join(result)
-
-
-# if __name__ == '__main__':
-#     dbw = DatabaseWriter()
-#     dbw.set_database()
-#     dbw.create_database()
+            id_ = result[0]
+            city = result[1]
+            temperature = result[2]
+            humidity = result[3]
+            weather = result[4]
+            date = (datetime.datetime.strptime(results[0][5], '%Y-%m-%d')).date()
+            time = (datetime.datetime.strptime(results[0][6], '%H:%M:%S')).time()
+            yield DatabaseWeatherData(id_, city, temperature, humidity, weather, date, time)
