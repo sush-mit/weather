@@ -27,26 +27,6 @@ if __name__=='__main__':
 
     if ap.args.query:
         WeatherDatabaseManager.get_database(order_by=ap.args.orderby, order_in=ap.args.orderin, filter_option=ap.filter_options, search_terms=ap.search_terms)
-<<<<<<< HEAD
-        sys.exit()
-    weather = w.get_weather(city=ap.args.city, state=ap.args.state, country=ap.args.country, api_key=ap.key, name=ap.args.name, unit=ap.args.unit)
-    if ap.args.store:
-        WeatherDatabaseManager.update_database(weather_obj=weather, city=ap.args.city)
-
-    if ap.args.unit.upper() == 'F':
-        weather.to_farenheit()
-    if ap.args.unit.upper() == 'C':
-        weather.to_celsius()
-
-    while True:
-        print(f'\nTemperature: {weather.temperature}{ap.args.unit.upper()}\nHumidity: {weather.humidity}%\nWeather condition: {weather.weather}')
-
-    while True:
-        print(f'Temperature: {weather.temperature}{ap.args.unit.upper()}\nHumidity: {weather.humidity}%\nWeather condition: {weather.weather}')
-        if not ap.args.interval:
-            sys.exit()
-        time.sleep(ap.args.interval)
-=======
     else:
         weather = w.get_weather(city=ap.args.city, state=ap.args.state, country=ap.args.country, api_key=ap.key, name=ap.args.name, unit=ap.args.unit)
         while True:
@@ -57,4 +37,3 @@ if __name__=='__main__':
             if not ap.args.interval:
                 sys.exit()
             time.sleep(ap.args.interval)
->>>>>>> implemented database read

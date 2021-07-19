@@ -19,8 +19,8 @@ class WeatherDatabaseManager:
             database_writer.create_database()
             database_writer.update_database(city, temperature, humidity, weather, date, time)
 
-    def get_database(order_by=None, order_in='ASC', filter_option=None, search_terms=None):
+    def get_database(timeframe, order_by=None, order_in='ASC', filter_option=None, search_terms=None):
         database_reader = DatabaseReader()
         database_reader.set_database()
-        database_data = database_reader.sqlite_select(order_by=order_by, order_in='ASC', filter_option=filter_option, search_terms=search_terms)
+        database_data = database_reader.sqlite_select(order_by=order_by, order_in='ASC', filter_option=filter_option, search_terms=search_terms, timeframe=timeframe)
         printer.database_weather_data(database_data)

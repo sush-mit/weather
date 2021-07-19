@@ -30,7 +30,6 @@ class DatabaseWriter(WeatherDatabase):
             self.c.execute(f"""INSERT INTO {DatabaseReader.table_name} (city, "temperature (K)", "humidity (%)", weather, date, time)
                     VALUES (?, ?, ?, ?, ?, ?)""",
                     (city, temperature, humidity, weather, date, time))
-            print('done')
         except BaseException as e:
             if 'UNIQUE constraint failed' in ' '.join(e.args):
                 pass
@@ -40,11 +39,11 @@ class DatabaseWriter(WeatherDatabase):
 
         
 class DatabaseReader(WeatherDatabase):
-    def sqlite_select(self, order_by=None, order_in='ASC', filter_option=None, search_terms=None):
-        command = self.get_command(order_by=order_by, order_in=order_in, filter_option=filter_option, search_terms=search_terms)
+    def sqlite_select(self, timeframe, order_by=None, order_in='ASC', filter_option=None, search_terms=None):
+        command = self.get_command(order_by=order_by, order_in=order_in, filter_option=filter_option, search_terms=search_terms, timeframe=timeframe)
         return self.execute(command=command)
 
-    def get_command(self, order_by, order_in, filter_option, search_terms):
+    def get_command(self, order_by, order_in, filter_option, search_terms, timeframe):
         command = f"""SELECT * FROM {WeatherDatabase.table_name}"""
         if filter_option != None and search_terms != None:
             command += ' WHERE'
@@ -52,6 +51,7 @@ class DatabaseReader(WeatherDatabase):
                 command += f""" {item[0]} = '{item[1]}'"""
                 if filter_option.index(item[0]) != len(filter_option)-1:
                     command += ' AND'
+            command += f' AND date > date(date, "{timeframe}")'
         if order_by != None and order_in != None:
             command +=  f' ORDER BY {order_by} {order_in}'
         return command
@@ -70,13 +70,6 @@ class DatabaseReader(WeatherDatabase):
 
     def parse(self, results):
         for result in results:
-        #     id_ = results[0][0]
-        #     city = results[0][1]
-        #     temperature = results[0][2]
-        #     humidity = results[0][3]
-        #     weather = results[0][4]
-        #     date = (datetime.datetime.strptime(results[0][5], '%Y-%m-%d')).date()
-        #     time = (datetime.datetime.strptime(results[0][6], '%H:%M:%S')).time()
             result = [str(re) for re in result]
             yield '   '.join(result)
 
