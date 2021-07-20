@@ -1,5 +1,5 @@
 # weather
-Python script for getting weather information for input location.  
+Python script for getting weather information for input location.
 _Please, refer to [ISO 3166](https://www.iso.org/obp/ui/#search) for the state codes or country codes._
 ### Usage:
 #### Adding provider to config:
