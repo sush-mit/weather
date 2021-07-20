@@ -1,43 +1,82 @@
-# weather
-Python script for getting weather information for input location.  
+# About
+Python script for getting weather information for input location. And storing them in a database.  
 _Please, refer to [ISO 3166](https://www.iso.org/obp/ui/#search) for the state codes or country codes._
+# **Arguments**
+### General arguments
+    --city                  City name.
+    --state                 State name.
+    --country               Country name.
+    --name                  Provider name.
 
-## Arguments:
-### General arguments:
-    --city = City name.
-    --state = State name.
-    self.args_parse.add_argument('--country', type=str, metavar='', help='Country.')
-    self.args_parse.add_argument('--name', type=str, metavar='', choices=lists.PROVIDERS+[None], help='Provider name.')
-### Print arguements:
-    self.args_parse.add_argument('-p', '--print', action='store_true', help='Print weather data to console.')
-    self.args_parse.add_argument('--unit', type=str, metavar='', choices=lists.UNITS, help='Units to print temperature in.', default='K')
-    self.args_parse.add_argument('--interval', type=float, metavar='', help='Interval to check weather (seconds).')
-### Query arguments:
-    self.args_parse.add_argument('--date', type=datetime.date.fromisoformat, metavar='', help='Date in YYYY-MM-DD.')
-    self.args_parse.add_argument('--get', type=str, metavar='', choices=lists.GETABLE_COLUMN_NAMES, help='Data to get (can be comma separated values).', default='all')
-    self.args_parse.add_argument('--timeframe',type=self.timeframe, metavar='', help='Time frame to get weather data from ("Ny"/"Nm"/"Nd").', default='1d')
-    self.args_parse.add_argument('--orderby', type=self.column_names, metavar='', help='Order data by.', default='id')
-    self.args_parse.add_argument('--orderin', type=str, metavar='', choices=lists.ORDER_IN, help='Order data in.', default='ASC')
-    self.args_parse.add_argument('--max', action='store_true', help='Get maximum value of following argument.')
-    self.args_parse.add_argument('--min', action='store_true', help='Get minimum value of following argument.')
-    self.args_parse.add_argument('--temperature', type=self.timeframe, metavar='', help='Get minimum value of following argument.', default='1d')
-    self.args_parse.add_argument('--humidity', type=self.timeframe, metavar='', help='Get minimum value of following argument.', default='1d')
+### Print arguements
+    -p, --print:            Use to print weather data to console.
+    --unit:                 Units to print temperature in.
+                            choices = ['K', 'F', 'C']
+                            default = K
+    --interval:             Interval to check weather (seconds). Optional.
+    --city:                 Required.
+    --state, --country:     Optional.
+### Database arguments
+    -s, --store:            Use to store weather data in database.
+    --query:                Use to get weather data from database.
+                            accepts: --get, --city, --date, --timeframe, --orderby,
+                            --orderin --max, --min, --temperature, --humidity, --min,
+                            --timeframe
+    --date:                 Date to query for.
+                            input format = YYYY-MM-DD
+    --get:                  Data to get.
+                            choices = ['temperature', 'humidity', 'weather', 'date',
+                            'all']
+                            default = 'all'
+    --timeframe:            Time frame to get weather data from.
+                            input format = '1d', '1w', '1m', '1y'
+    --orderby:              Order data by.
+                            choices = ['id', 'city', 'temperature', 'humidity',
+                            'weather', 'date', 'time']
+                            default = 'id'
+    --orderin:              Order data in.
+                            choices = ['ASC', 'DSC']
+                            default = 'ASC'
+    --max:                  Use to get maximum value of following argument. (Doesn't
+                            work with --timeframe.)
+    --min:                  Use to get minimum value of following argument. (Doesn't
+                            work with --timeframe.)
+    --temperature:          Use after --max or --min, get max/min temperature value of
+                            the last * timeframe. (doesn't work without --max/--min.)
+                            input format = '1d', '1w', '1m', '1y'
+    --humidity:             Use after --max or --min, get max/min humidity value of
+                            the last * timeframe. (doesn't work without --max/--min.)
+                            input format = '1d', '1w', '1m', '1y'
 
-    mutually_exclusive = self.args_parse.add_mutually_exclusive_group()
+### Config arguments
+    --config:               Use to set api configurations.
+                            accepted arguments: --name, --key
+    --key:                  API Key.
+<br/>
 
-    mutually_exclusive.add_argument('--config', action='store_true', help='config api.')
-    self.args_parse.add_argument('--key', type=str, metavar='', help='API Key.')
-    mutually_exclusive.add_argument('--query', action='store_true', help='Get weather data from database.')
-    mutually_exclusive.add_argument('-s', '--store', action='store_true', help='Store weather data in database.')
-## Usage:
-### Adding provider to config:
-    $ python3 weather.py --config --name=<provider-name> --key=<api-key>
-### Getting weather information:
-    $ python3 weather.py --city=<city>
-### Example:
+# **Usage**:
+## Adding provider to config
+    # Add "fwefa3r3a23aw" as key for openweather
     $ python3 weather.py --config --name=openweather --key=fwefa3r3a23aw
-    Settings saved to config.ini.
-    $ python3 weather.py --city Miami
-    Temperature: 30.85C
-    Humidity: 78%
-    Weather condition: Clouds
+
+<br/>
+
+## Getting weather information
+    # Print weather information for Miami on console every 2 seconds.
+    $ python3 weather.py -p --city Miami --state US-FL --country US --interval 2
+
+<br/>
+
+## Storing weather information to database
+    # Store weather information for Miami in database every 2 seconds.
+    $ python3 weather.py -s --city Miami --state US-FL --country US --interval 2
+
+<br/>
+
+## Querying database
+### Getting data for last N days
+    # Print all stored weather information of the past two days for the city of Miami.
+    $ python3 weather.py --query --get all --city miami --timeframe 2d
+### Getting max temperature data for last N days
+    # Print all stored weather information where the temperature is the highest in the last two days for the city of Miami.
+    $ python3 weather.py --query --get all --city miami --max --temperature 2d
