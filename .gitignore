@@ -1,4 +1,7 @@
-config.ini
+__pycache__
 *.pyc
 Pipfile
 Pipfile.lock
+*.ini
+*.bak
+*.db

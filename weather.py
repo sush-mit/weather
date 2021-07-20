@@ -10,7 +10,7 @@ import printer
 import filter_get
 
 class Weather:
-    def get_weather(api_key, city, unit, name="openweather", country = None, state = None):
+    def get_weather(api_key, city, unit, name, country = None, state = None):
         weather_provider = WeatherProviderFactory().get(name)
         weather_provider.api_key = api_key
         weather_provider.city = city

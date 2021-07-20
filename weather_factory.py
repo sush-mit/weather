@@ -3,7 +3,7 @@ from weatherapi import WeatherAPI
 from weatherbit import WeatherBit
 
 class WeatherProviderFactory:
-    def get(self, provider):
+    def get(self, provider='openweather'):
         if provider == 'openweather':
             return OpenWeather()
         elif provider == 'weatherapi':
