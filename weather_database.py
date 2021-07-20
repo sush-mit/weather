@@ -61,7 +61,7 @@ class DatabaseReader(WeatherDatabase):
         return self.execute(command=command)
 
     def get_command_max(self, timeframe, filter_option=None, city=None):
-        command = f"""SELECT * FROM {self.table_name} WHERE {filter_option} = (SELECT MIN({filter_option}) FROM {self.table_name} WHERE date > date(date, "{timeframe}")"""
+        command = f"""SELECT * FROM {self.table_name} WHERE {filter_option} = (SELECT MAX({filter_option}) FROM {self.table_name} WHERE date > date(date, "{timeframe}")"""
         if city != None:
             command += f' AND city = "{city}"'
         command += f""")"""

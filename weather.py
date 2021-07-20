@@ -19,6 +19,12 @@ class Weather:
         weather_provider.unit = unit
 
         weather_data = weather_provider.fetch()
+
+        if ap.args.unit.upper() == 'F':
+            weather_data.to_farenheit()
+        if ap.args.unit.upper() == 'C':
+            weather_data.to_celsius()
+
         return weather_data
 
 if __name__=='__main__':
@@ -43,6 +49,7 @@ if __name__=='__main__':
         filter_get.filter_get(database_data, ap)
     else:
         weather = w.get_weather(city=ap.args.city, state=ap.args.state, country=ap.args.country, api_key=ap.key, name=ap.args.name, unit=ap.args.unit)
+
         while True:
             if ap.args.print:
                 printer.weather_data(weather, ap)

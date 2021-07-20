@@ -22,14 +22,9 @@ class OpenWeather(WeatherProvider):
         response = json.loads(response)
 
         temperature = int(response['main']['temp'])
-        if self.unit == 'C':
-            temperature -= 272.15
-        if isinstance(temperature, float):
-            temperature = f'{temperature:.2f}'
         humidity = response['main']['humidity']
         if isinstance(humidity, float):
             humidity = f'{humidity:.2f}'
-
         weather = response['weather'][0]['main']
 
         data = WeatherData(temperature=temperature, humidity=humidity, weather=weather)

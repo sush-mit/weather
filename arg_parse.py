@@ -59,6 +59,8 @@ class ArgsProc:
         else:
             if self.ap.args.city == None and self.ap.args.country == None and self.ap.args.state == None:
                 sys.exit('Not enough arguments.')
+            if self.ap.args.name not in Config.API_NAMES+[None]:
+                sys.exit(f'Invalid provider name: {self.args.name}')
             if self.ap.args.name == None:
                 print('--name not specified, continuing with default: openweather')
                 self.ap.args.name = 'openweather'
@@ -67,12 +69,9 @@ class ArgsProc:
             if self.ap.key == None:
                 sys.exit(f'Key is not set for {self.ap.args.name}')
 
-        if not self.ap.args.unit:
-            self.ap.args.unit = 'C'
-            print('--unit not specified, continuing with default: C')
-        if self.ap.args.unit not in ['C', 'K']:
-            print('Wrong arguement for --unit, continuing with default: C.')
-            self.ap.args.unit = 'C'
+        if self.ap.args.unit not in ['K', 'F', 'C']:
+            print('Wrong arguement for --unit, continuing with default: K')
+            self.ap.args.unit = 'K'
 
     def process_config(self):
         if not any(arg for arg in [self.ap.args.name, self.ap.args.key]):
