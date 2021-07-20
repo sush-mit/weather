@@ -16,21 +16,21 @@ class ArgParse:
         self.args_parse.add_argument('--city', type=str, metavar='', help='City.')
         self.args_parse.add_argument('--state', type=str, metavar='', help='State.')
         self.args_parse.add_argument('--country', type=str, metavar='', help='Country.')
-        self.args_parse.add_argument('--name', type=str, metavar='', choices=lists.providers, help='Provider name.')
+        self.args_parse.add_argument('--name', type=str, metavar='', choices=lists.PROVIDERS+[None], help='Provider name.')
         # Print arguements
         self.args_parse.add_argument('-p', '--print', action='store_true', help='Print weather data to console.')
-        self.args_parse.add_argument('--unit', type=str, metavar='', choices=lists.units, help='Units to print temperature in.', default='K')
+        self.args_parse.add_argument('--unit', type=str, metavar='', choices=lists.UNITS, help='Units to print temperature in.', default='K')
         self.args_parse.add_argument('--interval', type=float, metavar='', help='Interval to check weather (seconds).')
         # Query arguments
         self.args_parse.add_argument('--date', type=datetime.date.fromisoformat, metavar='', help='Date in YYYY-MM-DD.')
-        self.args_parse.add_argument('--get', type=str, metavar='', choices=lists.getable_column_names, help='Data to get (can be comma separated values).')
+        self.args_parse.add_argument('--get', type=str, metavar='', choices=lists.GETABLE_COLUMN_NAMES, help='Data to get (can be comma separated values).', default='all')
         self.args_parse.add_argument('--timeframe',type=self.timeframe, metavar='', help='Time frame to get weather data from ("Ny"/"Nm"/"Nd").', default='1d')
-        self.args_parse.add_argument('--orderby', type=str, metavar='', choices=lists.getable_column_names, help='Order data by.')
-        self.args_parse.add_argument('--orderin', type=str, metavar='', choices=lists.order_in, help='Order data in.', default='ASC')
+        self.args_parse.add_argument('--orderby', type=self.column_names, metavar='', help='Order data by.', default='id')
+        self.args_parse.add_argument('--orderin', type=str, metavar='', choices=lists.ORDER_IN, help='Order data in.', default='ASC')
         self.args_parse.add_argument('--max', action='store_true', help='Get maximum value of following argument.')
         self.args_parse.add_argument('--min', action='store_true', help='Get minimum value of following argument.')
-        self.args_parse.add_argument('--temperature', type=self.timeframe, metavar='', help='Get minimum value of following argument.')
-        self.args_parse.add_argument('--humidity', type=self.timeframe, metavar='', help='Get minimum value of following argument.')
+        self.args_parse.add_argument('--temperature', type=self.timeframe, metavar='', help='Get minimum value of following argument.', default='1d')
+        self.args_parse.add_argument('--humidity', type=self.timeframe, metavar='', help='Get minimum value of following argument.', default='1d')
 
         mutually_exclusive = self.args_parse.add_mutually_exclusive_group()
 
@@ -48,6 +48,14 @@ class ArgParse:
         else:
             return input_
 
+    def column_names(self, input_):
+        if input_ in lists.COLUMN_NAMES:
+            return input_
+        if input_ == 'temperature':
+            return '"temperature (K)"'
+        if input_ == 'humidity':
+            return '"humidity (%)"'
+
 class ArgsProc:
     def __init__(self, ap):
         self.ap = ap
@@ -59,8 +67,6 @@ class ArgsProc:
         else:
             if self.ap.args.city == None and self.ap.args.country == None and self.ap.args.state == None:
                 sys.exit('Not enough arguments.')
-            if self.ap.args.name not in Config.API_NAMES+[None]:
-                sys.exit(f'Invalid provider name: {self.args.name}')
             if self.ap.args.name == None:
                 print('--name not specified, continuing with default: openweather')
                 self.ap.args.name = 'openweather'
@@ -81,7 +87,7 @@ class ArgsProc:
             if not self.ap.args.key:
                 error_msg += '--key'
             sys.exit(error_msg)
-        if self.ap.args.name not in Config.API_NAMES:
+        if self.ap.args.name not in lists.PROVIDERS:
             sys.exit(f'Invalid provider name: {self.ap.args.name}')
         self.ap.key = self.ap.args.key
         name = self.ap.args.name
@@ -92,7 +98,7 @@ class ArgsProc:
         if not self.ap.args.city and not self.ap.args.date and not self.ap.args.max and not self.ap.args.min:
             sys.exit('Please set how to filter data.')
         if not self.ap.args.get:
-            sys.exit(f'Please set which weather data to get: {lists.getable_column_names}')
+            sys.exit(f'Please set which weather data to get: {lists.GETABLE_COLUMN_NAMES}')
         if self.ap.args.max or self.ap.args.min:
             if self.ap.args.temperature:
                 self.ap.args.temperature = self.process_timeframe(self.ap.args.temperature)

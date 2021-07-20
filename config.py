@@ -1,15 +1,16 @@
 import os
 import configparser
 
+import lists
+
 class Config:
-    API_NAMES = ['openweather', 'weatherapi', 'weatherbit']
 
     config_filename = 'config.ini'
 
     def set_initial(self):
         config_parser = configparser.ConfigParser()
         if not os.path.isfile(Config.config_filename):
-            for name in self.API_NAMES:
+            for name in lists.PROVIDERS:
                 config_parser.add_section(name)
             with open('config.ini', 'w') as configfile:
                 config_parser.write(configfile)
