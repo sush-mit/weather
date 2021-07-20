@@ -2,13 +2,13 @@
 Python script for getting weather information for input location. And storing them in a database.  
 _Please, refer to [ISO 3166](https://www.iso.org/obp/ui/#search) for the state codes or country codes._
 # **Arguments**
-### General arguments
+## General arguments
     --city                  City name.
     --state                 State name.
     --country               Country name.
     --name                  Provider name.
 
-### Print arguements
+## Print arguements
     -p, --print:            Use to print weather data to console.
     --unit:                 Units to print temperature in.
                             choices = ['K', 'F', 'C']
@@ -16,7 +16,7 @@ _Please, refer to [ISO 3166](https://www.iso.org/obp/ui/#search) for the state c
     --interval:             Interval to check weather (seconds). Optional.
     --city:                 Required.
     --state, --country:     Optional.
-### Database arguments
+## Database arguments
     -s, --store:            Use to store weather data in database.
     --query:                Use to get weather data from database.
                             accepts: --get, --city, --date, --timeframe, --orderby,
@@ -48,7 +48,7 @@ _Please, refer to [ISO 3166](https://www.iso.org/obp/ui/#search) for the state c
                             the last * timeframe. (doesn't work without --max/--min.)
                             input format = '1d', '1w', '1m', '1y'
 
-### Config arguments
+## Config arguments
     --config:               Use to set api configurations.
                             accepted arguments: --name, --key
     --key:                  API Key.
