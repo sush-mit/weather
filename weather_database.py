@@ -96,9 +96,11 @@ class DatabaseReader(WeatherDatabase):
         for result in results:
             id_ = result[0]
             city = result[1]
-            temperature = result[2]
-            humidity = result[3]
-            weather = result[4]
+            state = result[2]
+            country = result[3]
+            temperature = result[4]
+            humidity = result[5]
+            weather = result[6]
             date = (datetime.datetime.strptime(results[0][7], '%Y-%m-%d')).date()
             time = (datetime.datetime.strptime(results[0][8], '%H:%M:%S')).time()
-            yield DatabaseWeatherData(id_, city, temperature, humidity, weather, date, time)
+            yield DatabaseWeatherData(id_, city, state, country, temperature, humidity, weather, date, time)
