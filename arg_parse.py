@@ -1,3 +1,4 @@
+import configparser
 import sys
 import argparse
 from time import time
@@ -6,19 +7,19 @@ import datetime
 import re
 
 from weather_database_manager import DatabaseReader
+from args_data import ArgsData
 import lists
 
 class ArgParse:
-    def __init__(self):
-        self.config = Config()
+    def arg_parse(self):
         self.args_parse = argparse.ArgumentParser(description='Get weather of given location.')
         # General arguments
         self.args_parse.add_argument('--city', type=str, metavar='', help='City.')
         self.args_parse.add_argument('--state', type=str, metavar='', help='State.')
         self.args_parse.add_argument('--country', type=str, metavar='', help='Country.')
         self.args_parse.add_argument('--name', type=str, metavar='', choices=lists.PROVIDERS+[None], help='Provider name.')
+        self.args_parse.add_argument('--key', type=str, metavar='', help='API Key.')
         # Print arguements
-        self.args_parse.add_argument('-p', '--print', action='store_true', help='Print weather data to console.')
         self.args_parse.add_argument('--unit', type=str, metavar='', choices=lists.UNITS, help='Units to print temperature in.', default='K')
         self.args_parse.add_argument('--interval', type=float, metavar='', help='Interval to check weather (seconds).')
         # Query arguments
@@ -35,12 +36,14 @@ class ArgParse:
         mutually_exclusive = self.args_parse.add_mutually_exclusive_group()
 
         mutually_exclusive.add_argument('--config', action='store_true', help='config api.')
-        self.args_parse.add_argument('--key', type=str, metavar='', help='API Key.')
         mutually_exclusive.add_argument('--query', action='store_true', help='Get weather data from database.')
+        self.args_parse.add_argument('-p', '--print', action='store_true', help='Print weather data to console.')
         mutually_exclusive.add_argument('-s', '--store', action='store_true', help='Store weather data in database.')
+
         args_proc = ArgsProc(self)
         self.args = self.args_parse.parse_args()
-        args_proc.process()
+
+        return args_proc.process()
 
     def timeframe(self, input_):
         if not any(condition for condition in [re.match('[0-9]+d', input_), re.match('[0-9]+w', input_), re.match('[0-9]+m', input_), re.match('[0-9]+y', input_)]):
@@ -58,7 +61,11 @@ class ArgParse:
 
 class ArgsProc:
     def __init__(self, ap):
+        self.config = Config()
         self.ap = ap
+        self.filter_options = None
+        self.search_terms = None
+
     def process(self):
         if self.ap.args.config:
             self.process_config()
@@ -70,14 +77,16 @@ class ArgsProc:
             if self.ap.args.name == None:
                 print('--name not specified, continuing with default: openweather')
                 self.ap.args.name = 'openweather'
-            config_parser = self.ap.config.get_config(self.ap.args.name)
-            self.ap.key = config_parser.get('key')
-            if self.ap.key == None:
+            config_parser = self.config.get_config(self.ap.args.name)
+            self.ap.args.key = config_parser.get('key')
+            if self.ap.args.key == None:
                 sys.exit(f'Key is not set for {self.ap.args.name}')
 
         if self.ap.args.unit not in ['K', 'F', 'C']:
             print('Wrong arguement for --unit, continuing with default: K')
             self.ap.args.unit = 'K'
+
+        return ArgsData(*vars(self.ap.args).values(), self.search_terms, self.filter_options)
 
     def process_config(self):
         if not any(arg for arg in [self.ap.args.name, self.ap.args.key]):
@@ -89,9 +98,8 @@ class ArgsProc:
             sys.exit(error_msg)
         if self.ap.args.name not in lists.PROVIDERS:
             sys.exit(f'Invalid provider name: {self.ap.args.name}')
-        self.ap.key = self.ap.args.key
         name = self.ap.args.name
-        self.ap.config.set_config(self.ap.key, name)
+        self.config.set_config(self.ap.args.key, name)
         sys.exit(f'Settings saved to {Config.config_filename}.')
 
     def process_query(self):
@@ -102,14 +110,14 @@ class ArgsProc:
         if self.ap.args.max or self.ap.args.min:
             if self.ap.args.temperature:
                 self.ap.args.temperature = self.process_timeframe(self.ap.args.temperature)
-                self.ap.filter_options = '"temperature (K)"'
+                self.filter_options = '"temperature (K)"'
             elif self.ap.args.humidity:
                 self.ap.args.humidity = self.process_timeframe(self.ap.args.humidity)
-                self.ap.filter_options = '"humidity (%)"'
+                self.filter_options = '"humidity (%)"'
         elif self.ap.args.timeframe:
             self.ap.args.timeframe = self.process_timeframe(self.ap.args.timeframe)
-            self.ap.filter_options = [filter_option for filter_option in ['city', 'date'] if self.ap.args.__getattribute__(filter_option)]
-        self.ap.search_terms = [search_term for search_term in [self.ap.args.city, self.ap.args.date] if search_term]
+            self.filter_options = [filter_option for filter_option in ['city', 'date'] if self.ap.args.__getattribute__(filter_option)]
+        self.search_terms = [search_term for search_term in [self.ap.args.city, self.ap.args.date] if search_term]
 
     def process_timeframe(self, timeframe):
             if re.match('[0-9]+d', timeframe):

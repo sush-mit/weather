@@ -23,8 +23,6 @@ class WeatherAPI(WeatherProvider):
         temperature = int(js['current']['temp_c'])
         temperature += 272.15 # Converting celsius to kelvin
         humidity = js['current']['humidity']
-        if isinstance(humidity, float):
-            humidity = f'{humidity:.2f}'
         weather = js['current']['condition']['text']
 
         weather_data = WeatherData(temperature=temperature, humidity=humidity, weather=weather)

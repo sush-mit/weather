@@ -7,7 +7,7 @@ import filter_get
 
 class WeatherDatabaseManager:
 
-    def update_database(weather_obj, city):
+    def update_database(weather_obj, city, state, country):
             temperature = weather_obj.temperature
             humidity = weather_obj.humidity
             weather = weather_obj.weather
@@ -17,7 +17,7 @@ class WeatherDatabaseManager:
             database_writer = DatabaseWriter()
             database_writer.set_database()
             database_writer.create_database()
-            database_writer.update_database(city, temperature, humidity, weather, date, time)
+            database_writer.update_database(city, state, country, temperature, humidity, weather, date, time)
 
     def get_database(timeframe, order_by=None, order_in='ASC', filter_option=None, search_terms=None):
         database_reader = DatabaseReader()

@@ -23,8 +23,6 @@ class OpenWeather(WeatherProvider):
 
         temperature = int(response['main']['temp'])
         humidity = response['main']['humidity']
-        if isinstance(humidity, float):
-            humidity = f'{humidity:.2f}'
         weather = response['weather'][0]['main']
 
         data = WeatherData(temperature=temperature, humidity=humidity, weather=weather)

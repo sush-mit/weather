@@ -17,6 +17,8 @@ class DatabaseWriter(WeatherDatabase):
         self.c.execute(f""" CREATE TABLE IF NOT EXISTS {WeatherDatabase.table_name} (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             city TEXT,
+            state TEXT,
+            country TEXT,
             "temperature (K)" REAL,
             "humidity (%)" REAL,
             weather TEXT,
@@ -25,11 +27,11 @@ class DatabaseWriter(WeatherDatabase):
         )""")
         self.conn.commit()
 
-    def update_database(self, city, temperature, humidity, weather, date, time):
+    def update_database(self, city, state, country, temperature, humidity, weather, date, time):
         try:
-            self.c.execute(f"""INSERT INTO {DatabaseReader.table_name} (city, "temperature (K)", "humidity (%)", weather, date, time)
-                    VALUES (?, ?, ?, ?, ?, ?)""",
-                    (city, temperature, humidity, weather, date, time))
+            self.c.execute(f"""INSERT INTO {DatabaseReader.table_name} (city, state, country, "temperature (K)", "humidity (%)", weather, date, time)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+                    (city, state, country, temperature, humidity, weather, date, time))
         except BaseException as e:
             if 'UNIQUE constraint failed' in ' '.join(e.args):
                 pass
@@ -97,6 +99,6 @@ class DatabaseReader(WeatherDatabase):
             temperature = result[2]
             humidity = result[3]
             weather = result[4]
-            date = (datetime.datetime.strptime(results[0][5], '%Y-%m-%d')).date()
-            time = (datetime.datetime.strptime(results[0][6], '%H:%M:%S')).time()
+            date = (datetime.datetime.strptime(results[0][7], '%Y-%m-%d')).date()
+            time = (datetime.datetime.strptime(results[0][8], '%H:%M:%S')).time()
             yield DatabaseWeatherData(id_, city, temperature, humidity, weather, date, time)

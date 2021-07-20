@@ -20,41 +20,41 @@ class Weather:
 
         weather_data = weather_provider.fetch()
 
-        if ap.args.unit.upper() == 'F':
+        if ap.unit.upper() == 'F':
             weather_data.to_farenheit()
-        if ap.args.unit.upper() == 'C':
+        if ap.unit.upper() == 'C':
             weather_data.to_celsius()
 
         return weather_data
 
 if __name__=='__main__':
     Config().set_initial()
-    ap = ArgParse()
+    ap = ArgParse().arg_parse()
     w = Weather
 
-    if ap.args.query:
-        if ap.args.max or ap.args.min:
-            if ap.args.max:
-                if ap.args.temperature:
-                    database_data = WeatherDatabaseManager.get_max(timeframe=ap.args.temperature, filter_option=ap.filter_options, city=ap.args.city)
-                elif ap.args.humidity:
-                    database_data = WeatherDatabaseManager.get_max(timeframe=ap.args.humidity, filter_option=ap.filter_options, city=ap.args.city)
-            if ap.args.min:
-                if ap.args.temperature:
-                    database_data = WeatherDatabaseManager.get_min(timeframe=ap.args.temperature, filter_option=ap.filter_options, city=ap.args.city)
-                elif ap.args.humidity:
-                    database_data = WeatherDatabaseManager.get_min(timeframe=ap.args.humidity, filter_option=ap.filter_options, city=ap.args.city)
+    if ap.query:
+        if ap.max or ap.min:
+            if ap.max:
+                if ap.temperature:
+                    database_data = WeatherDatabaseManager.get_max(timeframe=ap.temperature, filter_option=ap.filter_options, city=ap.city)
+                elif ap.humidity:
+                    database_data = WeatherDatabaseManager.get_max(timeframe=ap.humidity, filter_option=ap.filter_options, city=ap.city)
+            if ap.min:
+                if ap.temperature:
+                    database_data = WeatherDatabaseManager.get_min(timeframe=ap.temperature, filter_option=ap.filter_options, city=ap.city)
+                elif ap.humidity:
+                    database_data = WeatherDatabaseManager.get_min(timeframe=ap.humidity, filter_option=ap.filter_options, city=ap.city)
         else:
-            database_data = WeatherDatabaseManager.get_database(order_by=ap.args.orderby, order_in=ap.args.orderin, filter_option=ap.filter_options, search_terms=ap.search_terms, timeframe=ap.args.timeframe)
+            database_data = WeatherDatabaseManager.get_database(order_by=ap.orderby, order_in=ap.orderin, filter_option=ap.filter_options, search_terms=ap.search_terms, timeframe=ap.timeframe)
         filter_get.filter_get(database_data, ap)
     else:
-        weather = w.get_weather(city=ap.args.city, state=ap.args.state, country=ap.args.country, api_key=ap.key, name=ap.args.name, unit=ap.args.unit)
+        weather = w.get_weather(city=ap.city, state=ap.state, country=ap.country, api_key=ap.key, name=ap.name, unit=ap.unit)
 
         while True:
-            if ap.args.print:
+            if ap.store:
+                WeatherDatabaseManager.update_database(weather_obj=weather, city=ap.city, state=ap.state, country=ap.country)
+            if ap.print:
                 printer.weather_data(weather, ap)
-            if ap.args.store:
-                WeatherDatabaseManager.update_database(weather_obj=weather, city=ap.args.city)
-            if not ap.args.interval:
+            if not ap.interval:
                 sys.exit()
-            time.sleep(ap.args.interval)
+            time.sleep(ap.interval)
