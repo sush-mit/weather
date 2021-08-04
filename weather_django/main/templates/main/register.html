@@ -4,8 +4,11 @@ Weather: Register
 {% endblock title %}
     <body>
         <form method="post" action="/register/">
+            {% block heading %}
+            <h1 class="mt-2 mb-4"> Register </h1>
+            {% endblock heading %}
             {% block button %}
-            <button type="submit" name="register">Register</button>
+            <button type="submit" name="register" class="btn btn-primary">Register</button>
             {% endblock button %}
         </form>
     </body>
