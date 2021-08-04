@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style type="text/css">
+        .topnav {
+            width: 100%;
+            height: 30px;
+            position: fixed;
+            z-index: 1;
+            text-align: right;
+            top: 0;
+            right: 0;
+            background-color: #404040;
+            overflow-x: hidden;
+            padding-top: 10px;
+            padding-right: 10px;
+        }
+        .topnav a {
+            padding: 6px 8px 6px 16px;
+            text-decoration: none;
+            color: #818181;
+        }
+        .topnav a:hover {
+            color: #f1f1f1;
+        }
+
+        .main {
+            margin-top: 40px;
+            padding: 10px 0px;
+        }
+        </style>
+        <title>{% block title %}{% endblock title %}</title>
+    </head>
+    <body>
+        <div class="topnav">
+            <a href="/">Home</a>
+            <a href="/login">Login</a>
+            <a href="/register">Register</a>
+        </div>
+        <div class="main" id="content" name="content">
+            {% block content %}
+                <form class="form" method="post" action="/register/">
+                    <div>
+                        {% block form %}
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                        {% endblock form %}
+                        {% block button %}
+                        {% endblock button %}
+                    </div>
+                </form>
+            {% endblock content %}
+        </div>
+    </body>
+</html>

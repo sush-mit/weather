@@ -1,0 +1,12 @@
+{% extends "main/base.html" %}
+{% block title %}
+Weather: Register
+{% endblock title %}
+    <body>
+        <form method="post" action="/register/">
+            {% block button %}
+            <button type="submit" name="register">Register</button>
+            {% endblock button %}
+        </form>
+    </body>
+</html>
